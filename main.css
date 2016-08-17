@@ -21,29 +21,63 @@ div {
 /* 主体的位置 */
 
 .content {
-	position: fixed;
+    position: fixed;
     margin: -200px -200px;
-	top: 50%;
-	left: 50%;
-    /*box-sizing: border-box;*/
+    top: 50%;
+    left: 50%;
+    box-sizing: border-box;
     width: 400px;
     height: 400px;
     border-radius: 8px;
     background-color: #bbada0;
-    padding: 12px;
+    padding: 16px;
 }
 
+
+/* 网格系统 */
+
 .content .grid {
-    background-color: rgba(238, 228, 218, 0.35);
     box-sizing: border-box;
     width: 400px;
     height: 400px;
     position: absolute;
+    border-radius: 4px;
 }
 
+
+/* 每一行间隔是16，和外部padding模拟的边框一样大小 */
+
+.content .grid .row {
+    margin-bottom: 16px;
+    border-radius: 3px;
+    width: 500px;
+}
+
+
+/* 清除每行的浮动 */
+
+.content .grid .row::after {
+    content: "";
+    display: block;
+    clear: both;
+}
+
+/* 每行中的每列，每个cell将会覆盖下级的背景色 */
+.content .grid .row .cell {
+    background-color: rgba(238, 228, 218, 0.35);
+    margin-right: 16px;
+    border-radius: 3px;
+    /*这个是计算后的值 ( 400 - 3*16  )/4 */
+    width: 88px;
+    height: 88px;
+    float: left;
+}
+
+/* 这元素位置要和下面的重合，但是值得注意的是他的z-index值应当大于下面的 */
 .content .tile {
     box-sizing: border-box;
     width: 400px;
     height: 400px;
+    z-index: 10;
     position: absolute;
 }
