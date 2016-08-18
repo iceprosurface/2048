@@ -168,111 +168,161 @@
 
 
 
-        //这里将会未来常量的声明区域
+    //这里将会未来常量的声明区域
+    var BLOCK_SIZE = 88;
+    //这里将会是未来全局变量的声明区域
 
-        //这里将会是未来全局变量的声明区域
 
-
-        //这里将会是未来操作方法的声明区域
-        // 0.0.1:设定一个可能存在的grid系统
-        function grid(size) {
-            this.size = size;
-            this.cells = [];
+    //这里将会是未来操作方法的声明区域
+    // 0.0.1:设定一个可能存在的grid系统
+    function grid(size) {
+        this.size = size;
+        this.cells = this.empty();
+    }
+    //0.0.2:设定一些可能存在的结构
+    grid.prototype.empty = function() {
+        //生成一个空的地图
+        for (var rows = [], cellIndex = 0; cellIndex < this.size; cellIndex++) {
+            for (var cells = rows[cellIndex] = [], rowIndex = 0; rowIndex < this.size; rowIndex++) {
+                cells.push(null);
+            }
         }
-        //0.0.2:设定一些可能存在的结构
-        grid.prototype.empty = function() {
-            //生成一个空的地图
-            for (var gird = [], rowIndex = 0; rowIndex < this.size; rowIndex++) {
-                for (var cell = grid[rowIndex] = [], cellIndex; cellIndex < this.size; cellIndex++) {
-                    cell.push(null);
+        return rows;
+    };
+    grid.prototype.haveEmpty = function() {
+
+    };
+    grid.prototype.whereEmpty = function() {
+        var emptyList = [];
+        for (var i in this.cells) {
+            for (var j in this.cells[i]) {
+                if (!this.cells[i][j]) {
+                    emptyList.push({ x: i, y: j });
                 }
             }
         }
-    }
-    return;
-};
-grid.prototype.haveEmpty = function() {
-
-};
-grid.prototype.randomAdd = function() {
-
-};
-
-function tile(position, value) {
-    this.x = position.x;
-    this.y = position.y;
-    this.value = value;
-    //默认为空
-    this.previousPosition = null;
-}
-//记录一个之前的节点用于在移动时显示动画
-tile.prototype.savePositon = function() {
-
-};
-tile.prototype.updatePositon = function(position) {
-    this.x = point.x;
-    this.y = point.y;
-};
-//序列化的函数，用于在传递时更简单的调用
-tile.prototype.serialize = function() {
-    return {
-        position: {
-            x: this.x,
-            y: this.y
-        },
-        value: this.value
+        return emptyList;
     };
-};
-// tile.
-// 0.0.1:设定GameManage
-//========
-function GameManage(contentId, size) {
-    this.content = $('#' + contentId);
-    if (isNaN(size)) {
-        size = 4;
-    } else {
-        var contentLength = 88 * size + 16 * (size - 1);
+    grid.prototype.randomAdd = function() {
+        var emptyList = this.whereEmpty(),
+            which = Math.floor(Math.random() * emptyList.length),
+            num = Math.random() < 0.8 ? 2 : 4,
+            newTile = new tile(emptyList[which], num);
+        this.insertCell(newTile);
+        //TODO:检测是否能够继续
+    };
+    grid.prototype.insertCell = function(tile) {
+        this.cells[tile.x][tile.y] = tile;
+    };
+    grid.prototype.removeCell = function(tile) {
+        this.cells[tile.x][tile.y] = null;
+    };
+    grid.prototype.randerDom = function() {
+        var _dom = $.div();
+        for (var i in this.cells) {
+            for (var j in this.cells[i]) {
+                if (this.cells[i][j]) {
+                    var _tile = $.div().addClass('tile-cell').addClass('tile-' + this.cells[i][j].value).css({
+                        'top': (BLOCK_SIZE * j + 16 * j) + 'px',
+                        'left': (BLOCK_SIZE * i + 16 * i) + 'px'
+                    });
+                    var _font = document.createElement('font');
+                    _font.innerHTML = this.cells[i][j].value;
+                    _tile.append(_font);
+                    _dom.append(_tile);
+                }
+            }
+        }
+        return _dom;
+    };
+
+    function tile(position, value) {
+        this.x = position.x;
+        this.y = position.y;
+        this.value = value;
+        //默认为空
+        this.previousPosition = null;
+        return this;
+    }
+    //记录一个之前的节点用于在移动时显示动画
+    tile.prototype.savePositon = function() {
+
+    };
+    tile.prototype.updatePositon = function(position) {
+        this.x = point.x;
+        this.y = point.y;
+    };
+    //序列化的函数，用于在传递时更简单的调用
+    tile.prototype.serialize = function() {
+        return {
+            position: {
+                x: this.x,
+                y: this.y
+            },
+            value: this.value
+        };
+    };
+    // tile.
+    // 0.0.1:设定GameManage
+    //========
+    function GameManage(contentId, size) {
+        if (isNaN(size)) size = 4;
+        //如果是其他大小的将会动态创建盒子大小
+        var contentLength = BLOCK_SIZE * size + 16 * (size - 1);
         var sizeCSS = {
             'width': contentLength + 'px',
             'height': contentLength + 'px',
         };
-        var contentMargin = { 'margin': '-' + (contentLength / 2) + 'px' + ' -' + (contentLength / 2) + 'px' };
-        this.content.css(sizeCSS).css(contentMargin);
+        this.content = $('#' + contentId);
         //添加tile
-        this.tile = $.div().addClass('tile').css(sizeCSS);
+        this.tile = $.div().addClass('tile');
         this.content.append(this.tile);
-    }
-    this.grid = $.div().addClass('grid');
-    //初始化内容区
-    for (var i = (size - 1); i >= 0; i--) {
-        var _row = $.div().addClass('row');
-        for (var j = (size - 1); j >= 0; j--) {
-            _row.append($.div().addClass('cell'));
+
+        this.grid = $.div().addClass('grid');
+        if (size != 4) {
+            var contentMargin = { 'margin': '-' + (contentLength / 2) + 'px' + ' -' + (contentLength / 2) + 'px' };
+            this.content.css(sizeCSS).css(contentMargin);
+            this.tile.css(sizeCSS);
+            this.grid.css(sizeCSS);
         }
-        this.grid.append(_row);
+        //初始化内容区
+        for (var i = (size - 1); i >= 0; i--) {
+            var _row = $.div().addClass('row');
+            for (var j = (size - 1); j >= 0; j--) {
+                _row.append($.div().addClass('cell'));
+            }
+            this.grid.append(_row);
+        }
+        //添加grid加入content渲染区域
+        this.content.append(this.grid);
+        //初始化绑定
+
+        //初始化grid系统
+        this.grid = new grid(size);
+        return this;
+
     }
-    //添加grid加入content渲染区域
-    this.content.append(this.grid);
-    //初始化绑定
+    //0.0.2:设定一些可能存在的结构
+    //系统的启动
+    GameManage.prototype.start = function() {
+        this.grid.randomAdd();
+        var _dom = this.grid.randerDom();
+        this.tile.append(_dom);
+    };
+    //系统的关闭
+    GameManage.prototype.stop = function() {
 
-    this.grid = new grid(size);
-    return this;
+    };
+    //可能需要添加的controlmanage
+    function controlManage() {
 
-}
-//0.0.2:设定一些可能存在的结构
-//系统的启动
-GameManage.prototype.start = function() {
+    }
+    // controlManage.prototype.
+    //这里将会是未来，window全局访问接口的定义位置
+    // 0.0.1:首先定义全局访问接口
 
-};
-//系统的关闭
-GameManage.prototype.stop = function() {
-
-};
-
-//这里将会是未来，window全局访问接口的定义位置
-// 0.0.1:首先定义全局访问接口
-
-window.fake2048 = GameManage;
+    window.fake2048 = GameManage;
 })();
 
-var game = fake2048('content');
+var game = new fake2048('content', 4);
+game.start();

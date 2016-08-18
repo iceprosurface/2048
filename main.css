@@ -49,7 +49,7 @@ div {
 .content .grid .row {
     margin-bottom: 16px;
     border-radius: 3px;
-    width: 500px;
+    width: 1500px;
 }
 
 
@@ -61,7 +61,9 @@ div {
     clear: both;
 }
 
+
 /* 每行中的每列，每个cell将会覆盖下级的背景色 */
+
 .content .grid .row .cell {
     background-color: rgba(238, 228, 218, 0.35);
     margin-right: 16px;
@@ -72,11 +74,70 @@ div {
     float: left;
 }
 
+
 /* 这元素位置要和下面的重合，但是值得注意的是他的z-index值应当大于下面的 */
+
 .content .tile {
     box-sizing: border-box;
     width: 400px;
     height: 400px;
     z-index: 10;
     position: absolute;
+}
+
+.content .tile-cell {
+    position: absolute;
+    text-align: center;
+    line-height: 88px;
+    width: 88px;
+    font-size: 53px;
+    color: #f9f6f2;
+    font-family: "Clear Sans", "Helvetica Neue", Arial, sans-serif;
+    border-radius: 3px;
+}
+
+.content .tile-cell.tile-2 {
+    background-color: #eee4da;
+    color: #776e65;
+}
+
+.content .tile-cell.tile-4 {
+    background-color: #ede0c8;
+    color: #776e65;
+}
+
+.content .tile-cell.tile-8 {
+    background-color: #f2b179;
+}
+
+.content .tile-cell.tile-16 {
+    background-color: #f59563;
+}
+
+.content .tile-cell.tile-32 {
+    background-color: #f67c5f;
+}
+
+.content .tile-cell.tile-64 {
+    background-color: #f65e3b;
+}
+
+.content .tile-cell.tile-128 {
+    background-color: #edcf72;
+}
+
+.content .tile-cell.tile-256 {
+    background-color: #edcc61;
+}
+
+.content .tile-cell.tile-512 {
+    background-color: #edc850;
+}
+
+.content .tile-cell.tile-1024 {
+    background-color: #edc53f;
+}
+
+.content .tile-cell.tile-2048 {
+    background-color: #edc22e;
 }
