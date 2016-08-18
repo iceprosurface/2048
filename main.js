@@ -222,7 +222,7 @@
         for (var i in this.cells) {
             for (var j in this.cells[i]) {
                 if (this.cells[i][j]) {
-                    var _tile = $.div().addClass('tile-cell').addClass('tile-' + this.cells[i][j].value).css({
+                    var _tile = $.div().addClass('tile-' + this.cells[i][j].value).addClass('tile-cell').css({
                         'top': (BLOCK_SIZE * j + 16 * j) + 'px',
                         'left': (BLOCK_SIZE * i + 16 * i) + 'px'
                     });
