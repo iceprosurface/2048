@@ -95,6 +95,15 @@ div {
     font-family: "Clear Sans", "Helvetica Neue", Arial, sans-serif;
     border-radius: 3px;
     font-weight: bold;
+    -webkit-transition: 100ms ease-in-out;
+    -moz-transition: 100ms ease-in-out;
+    transition: 100ms ease-in-out;
+    -webkit-transition-property: -webkit-transform;
+    -moz-transition-property: -moz-transform;
+    transition-property: top,left;
+}
+
+.content .tile-new {
     -webkit-animation: appear 200ms ease 100ms;
     -moz-animation: appear 200ms ease 100ms;
     animation: appear 200ms ease 100ms;
