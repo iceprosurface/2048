@@ -221,10 +221,11 @@
         return (position.x >= 0 && position.x < this.size && position.y >= 0 && position.y < this.size);
     };
     grid.prototype.moveTile = function(from, to) {
+        if (from.x == to.x && from.y == to.y) return this.cells[from.x][from.y];
         this.cells[from.x][from.y].updatePositon(to);
         this.cells[to.x][to.y] = this.cells[from.x][from.y];
         this.cells[from.x][from.y] = null;
-        return this.cells[to.x][to.y]
+        return this.cells[to.x][to.y];
     };
     //深度优先遍历
     grid.prototype.travelDeep = function(direction) {
@@ -243,7 +244,7 @@
                     // var
                     var cellResult = self.findNearestPosition(position, getVector(direction));
                     if (self.withinBound(cellResult.next)) {
-                        if (cellResult.next.value == cellResult.nearest.value) {
+                        if (self.getCellContent(cellResult.next).value == self.getCellContent(cellResult.nearest).value) {
                             //若value相同则是可以合并的，把cell放置入mergedform
                             cellResult.next.mergedFrom = self.cells[x][y];
                             cellResult.next.value *= 2;
@@ -315,7 +316,7 @@
                         if (this.cells[i][j].mergedFrom) {
 
                         } else {
-                            //如果是=没有merge from就说明只有移动
+                            //如果是=没有merge from就说明只有移动或者不动,不管动不动都一样
                             var prey = parseInt(this.cells[i][j].previousPosition.y);
                             var prex = parseInt(this.cells[i][j].previousPosition.x);
                             var y = this.cells[i][j].y;
