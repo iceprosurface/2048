@@ -217,6 +217,7 @@
     grid.prototype.isEmptyCell = function(position) {
         return !(this.cells[position.x][position.y]);
     };
+    //判断元素是否在边界以内
     grid.prototype.withinBound = function(position) {
         return (position.x >= 0 && position.x < this.size && position.y >= 0 && position.y < this.size);
     };
@@ -244,10 +245,12 @@
                     // var
                     var cellResult = self.findNearestPosition(position, getVector(direction));
                     if (self.withinBound(cellResult.next)) {
-                        if (self.getCellContent(cellResult.next).value == self.getCellContent(cellResult.nearest).value) {
+                        if (self.getCellContent(cellResult.next) &&
+                            self.getCellContent(cellResult.nearest) &&
+                            self.getCellContent(cellResult.next).value == self.getCellContent(cellResult.nearest).value) {
                             //若value相同则是可以合并的，把cell放置入mergedform
-                            cellResult.next.mergedFrom = self.cells[x][y];
-                            cellResult.next.value *= 2;
+                            self.getCellContent(cellResult.next).mergedFrom = self.cells[x][y];
+                            self.getCellContent(cellResult.next).value *= 2;
                             //随后移除现在的元素
                             self.removeCell(position);
                         } else {
@@ -310,11 +313,44 @@
         for (var i in this.cells) {
             for (var j in this.cells[i]) {
                 if (this.cells[i][j]) {
-                    var _tile, _font;
+                    var _tile, _font, _from;
                     //应当新出现的元素渲染，新出现的元素的previous是null
                     if (this.cells[i][j].previousPosition) {
                         if (this.cells[i][j].mergedFrom) {
-
+                            var y = parseInt(this.cells[i][j].mergedFrom.y);
+                            var x = parseInt(this.cells[i][j].mergedFrom.x);
+                            var prey = this.cells[i][j].y;
+                            var prex = this.cells[i][j].x;
+                            var value = this.cells[i][j].mergedFrom.value;
+                            _from = $.div()
+                                .addClass('tile-' + value)
+                                .addClass('tile-cell')
+                                .css({
+                                    'top': (BLOCK_SIZE * prey + 16 * prey) + 'px',
+                                    'left': (BLOCK_SIZE * prex + 16 * prex) + 'px'
+                                });
+                            _tile = $.div()
+                                .addClass('tile-' + value)
+                                .addClass('tile-cell')
+                                .css({
+                                    'top': (BLOCK_SIZE * y + 16 * y) + 'px',
+                                    'left': (BLOCK_SIZE * x + 16 * x) + 'px'
+                                });
+                            _font = document.createElement('font');
+                            _font.innerHTML = this.cells[i][j].value;
+                            _tile.append(_font);
+                            _from.append(_font);
+                            _dom.append(_tile);
+                            _dom.append(_from);
+                            window.requestAnimationFrame((function(dx, dy, dfrom, dtile, dvalue) {
+                                return function() {
+                                    dtile.css({
+                                        'top': (BLOCK_SIZE * dy + 16 * dy) + 'px',
+                                        'left': (BLOCK_SIZE * dx + 16 * dx) + 'px'
+                                    });
+                                    dfrom.removeClass('tile-' + dvalue).addClass('tile-' + dvalue * 2).addClass('tile-merged');
+                                }
+                            })(x, y, _from, _tile, value));
                         } else {
                             //如果是=没有merge from就说明只有移动或者不动,不管动不动都一样
                             var prey = parseInt(this.cells[i][j].previousPosition.y);
@@ -332,12 +368,14 @@
                             _font.innerHTML = this.cells[i][j].value;
                             _tile.append(_font);
                             _dom.append(_tile);
-                            window.requestAnimationFrame(function() {
-                                _tile.css({
-                                    'top': (BLOCK_SIZE * y + 16 * y) + 'px',
-                                    'left': (BLOCK_SIZE * x + 16 * x) + 'px'
-                                });
-                            });
+                            window.requestAnimationFrame((function(dx, dy, dtile) {
+                                return function() {
+                                    dtile.css({
+                                        'top': (BLOCK_SIZE * dy + 16 * dy) + 'px',
+                                        'left': (BLOCK_SIZE * dx + 16 * dx) + 'px'
+                                    });
+                                };
+                            })(x, y, _tile));
                         }
                     } else {
                         _tile = $.div()
@@ -463,6 +501,7 @@
                 return;
         }
         this.grid.travelDeep(direction);
+        this.grid.randomAdd();
         this.tile[0].innerHTML = "";
         var _dom = this.grid.randerDom();
         this.tile.append(_dom);

@@ -100,13 +100,21 @@ div {
     transition: 100ms ease-in-out;
     -webkit-transition-property: -webkit-transform;
     -moz-transition-property: -moz-transform;
-    transition-property: top,left;
+    transition-property: top, left;
 }
 
 .content .tile-new {
     -webkit-animation: appear 200ms ease 100ms;
     -moz-animation: appear 200ms ease 100ms;
     animation: appear 200ms ease 100ms;
+    animation-fill-mode: backwards;
+}
+
+.content .tile-merged {
+    z-index: 11;
+    -webkit-animation: pop 300ms ease 100ms;
+    -moz-animation: pop 300ms ease 100ms;
+    animation: pop 300ms ease 100ms;
     animation-fill-mode: backwards;
 }
 
@@ -154,7 +162,59 @@ div {
         transform: scale(1);
     }
 }
+@-webkit-keyframes pop {
+    0% {
+        -webkit-transform: scale(1);
+        -moz-transform: scale(1);
+        transform: scale(1);
+    }
+    50% {
+    	-webkit-transform: scale(1.2);
+        -moz-transform: scale(1.2);
+        transform: scale(1.2);
+    }
+    100% {
+        -webkit-transform: scale(1);
+        -moz-transform: scale(1);
+        transform: scale(1);
+    }
+}
 
+@-moz-keyframes pop {
+    0% {
+        -webkit-transform: scale(1);
+        -moz-transform: scale(1);
+        transform: scale(1);
+    }
+    50% {
+    	-webkit-transform: scale(1.2);
+        -moz-transform: scale(1.2);
+        transform: scale(1.2);
+    }
+    100% {
+        -webkit-transform: scale(1);
+        -moz-transform: scale(1);
+        transform: scale(1);
+    }
+}
+
+@keyframes pop {
+    0% {
+        -webkit-transform: scale(1);
+        -moz-transform: scale(1);
+        transform: scale(1);
+    }
+    50% {
+    	-webkit-transform: scale(1.2);
+        -moz-transform: scale(1.2);
+        transform: scale(1.2);
+    }
+    100% {
+        -webkit-transform: scale(1);
+        -moz-transform: scale(1);
+        transform: scale(1);
+    }
+}
 .content .tile-cell.tile-2 {
     background-color: #eee4da;
     color: #776e65;
