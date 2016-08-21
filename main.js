@@ -245,7 +245,7 @@
                     if (self.withinBound(cellResult.next)) {
                         if (self.getCellContent(cellResult.next) &&
                             self.getCellContent(position) && 
-							
+							!(self.getCellContent(cellResult.next).mergedFrom )&&
                             self.getCellContent(cellResult.next).value == self.getCellContent(position).value) {
                             //若value相同则是可以合并的，把cell放置入mergedform
                             self.getCellContent(cellResult.next).mergedFrom = self.cells[x][y];
