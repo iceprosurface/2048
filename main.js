@@ -74,7 +74,7 @@
         removeClass: function(ClassName) {
             this.each(function() {
                 if ((this.nodeType) && (this.nodeType != 11)) {
-					this.className = this.className.replace(new RegExp("(\\s|^)(" + ClassName + ")(\\s|$)", "g"), "$1");
+                    this.className = this.className.replace(new RegExp("(\\s|^)(" + ClassName + ")(\\s|$)", "g"), "$1");
                 }
             });
             //为了满足连贯操作
@@ -178,6 +178,9 @@
     grid.prototype.haveReachableCell = function() {
 
     };
+    grid.prototype.isGridEmpty = function() {
+        return !this.whereEmpty();
+    };
     grid.prototype.whereEmpty = function() {
         var emptyList = [];
         for (var x in this.cells) {
@@ -220,17 +223,18 @@
         return (position.x >= 0 && position.x < this.size && position.y >= 0 && position.y < this.size);
     };
     grid.prototype.moveTile = function(from, to) {
-        if (from.x == to.x && from.y == to.y) return this.cells[from.x][from.y];
-        this.cells[from.x][from.y].updatePositon(to);
+        if (from.x == to.x && from.y == to.y) return false;
+        this.getCellContent(from).updatePositon(to);
         this.cells[to.x][to.y] = this.cells[from.x][from.y];
         this.cells[from.x][from.y] = null;
-        return this.cells[to.x][to.y];
+        return this.getCellContent(to);
     };
     //深度优先遍历
     grid.prototype.travelDeep = function(direction) {
         this.travelCalculateInit();
         var directionList = getDirectionList(getVector(direction), this.size);
         var self = this;
+        var isMovedFlag = false;
         //第一级x方向
         directionList.x.forEach(function(x) {
             //第二级y方向
@@ -240,32 +244,33 @@
                     'y': y
                 };
                 if (self.availableCell(position)) {
-                    // var
                     var cellResult = self.findNearestPosition(position, getVector(direction));
                     if (self.withinBound(cellResult.next)) {
                         if (self.getCellContent(cellResult.next) &&
-                            self.getCellContent(position) && 
-							!(self.getCellContent(cellResult.next).mergedFrom )&&
+                            self.getCellContent(position) &&
+                            !(self.getCellContent(cellResult.next).mergedFrom) &&
                             self.getCellContent(cellResult.next).value == self.getCellContent(position).value) {
                             //若value相同则是可以合并的，把cell放置入mergedform
                             self.getCellContent(cellResult.next).mergedFrom = self.cells[x][y];
-							self.getCellContent(cellResult.next).value *= 2;
+                            self.getCellContent(cellResult.next).value *= 2;
                             //随后移除现在的元素
                             self.removeCell(position);
                         } else {
                             //移动至位置
-                            self.moveTile(position, cellResult.nearest);
+                            self.moveTile(position, cellResult.nearest) ? isMovedFlag |= true : isMovedFlag |= false;
                             //获得元素并更新postion
                             // self.getCellContent(cellResult.nearest);
                         }
                     } else {
-                        self.moveTile(position, cellResult.nearest);
+                        self.moveTile(position, cellResult.nearest) ? isMovedFlag |= true : isMovedFlag |= false;
                         //获得元素并更新postion
                         // self.getCellContent(cellResult.nearest);
                     }
                 }
             });
         });
+        //返回一个值判断是否移动
+        return isMovedFlag;
     };
     //寻找最近可访问元素
     grid.prototype.findNearestPosition = function(position, direction) {
@@ -499,8 +504,13 @@
             default:
                 return;
         }
-        this.grid.travelDeep(direction);
-        this.grid.randomAdd();
+        if (this.grid.travelDeep(direction)) {
+            //当移动过才能添加随机的点
+            this.grid.randomAdd();
+            //判断游戏是否结束
+
+        }
+        //绘制dom
         this.tile[0].innerHTML = "";
         var _dom = this.grid.randerDom();
         this.tile.append(_dom);

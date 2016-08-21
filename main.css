@@ -251,12 +251,15 @@ div {
 
 .content .tile-cell.tile-512 {
     background-color: #edc850;
+    font-size: 43px;
 }
 
 .content .tile-cell.tile-1024 {
     background-color: #edc53f;
+    font-size: 32px;
 }
 
 .content .tile-cell.tile-2048 {
     background-color: #edc22e;
+    font-size: 32px;
 }
