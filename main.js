@@ -74,9 +74,7 @@
         removeClass: function(ClassName) {
             this.each(function() {
                 if ((this.nodeType) && (this.nodeType != 11)) {
-                    $(this).each(function(i, item) {
-                        item.className = item.className.replace(new RegExp("(\\s|^)(" + ClassName + ")(\\s|$)", "g"), "$1");
-                    });
+					this.className = this.className.replace(new RegExp("(\\s|^)(" + ClassName + ")(\\s|$)", "g"), "$1");
                 }
             });
             //为了满足连贯操作
@@ -246,11 +244,12 @@
                     var cellResult = self.findNearestPosition(position, getVector(direction));
                     if (self.withinBound(cellResult.next)) {
                         if (self.getCellContent(cellResult.next) &&
-                            self.getCellContent(cellResult.nearest) &&
-                            self.getCellContent(cellResult.next).value == self.getCellContent(cellResult.nearest).value) {
+                            self.getCellContent(position) && 
+							
+                            self.getCellContent(cellResult.next).value == self.getCellContent(position).value) {
                             //若value相同则是可以合并的，把cell放置入mergedform
                             self.getCellContent(cellResult.next).mergedFrom = self.cells[x][y];
-                            self.getCellContent(cellResult.next).value *= 2;
+							self.getCellContent(cellResult.next).value *= 2;
                             //随后移除现在的元素
                             self.removeCell(position);
                         } else {
@@ -284,7 +283,7 @@
                 y: next.y + direction.y
             };
         } while (this.withinBound(next) && this.isEmptyCell(next));
-        //返回时，下一个元素有两种可能，第一:超出边界，第二:可合并元素
+        //返回时，下一个元素有两种可能，第一:超出边界，第二:可合并元素,第三种已经合并元素
         return {
             'nearest': nearest,
             'next': next
