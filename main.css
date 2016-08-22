@@ -30,6 +30,7 @@ div {
     border-radius: 8px;
     background-color: #bbada0;
     padding: 16px;
+    overflow: hidden;
 }
 
 
@@ -118,6 +119,76 @@ div {
     animation-fill-mode: backwards;
 }
 
+
+/* 控制盒子 */
+
+.content .control-box h2 {
+    font-size: 60px;
+    font-weight: bold;
+    height: 60px;
+    line-height: 60px;
+    color: #f9f6f2;
+}
+
+.content .control-box .control {
+    padding: 90px;
+}
+
+.content .control-box {
+    position: absolute;
+    text-align: center;
+    width: 100%;
+    height: 100%;
+    margin-top: -16px;
+    margin-left: -16px;
+    padding-top: 200px;
+    z-index: 12;
+    background: rgba(238, 228, 218, 0.5);
+    -webkit-animation: fade-in 800ms ease 1200ms;
+    -moz-animation: fade-in 800ms ease 1200ms;
+    animation: fade-in 800ms ease 1200ms;
+    animation-fill-mode: backwards;
+}
+
+.content .control-box button {
+    display: inline-block;
+    background: #8f7a66;
+    border-radius: 3px;
+    border: none;
+    padding: 0 20px;
+    text-decoration: none;
+    color: #f9f6f2;
+    height: 40px;
+    line-height: 42px;
+}
+
+@-moz-keyframes fade-in {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+@-webkit-keyframes fade-in {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+@keyframes fade-in {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
 @-webkit-keyframes appear {
     0% {
         opacity: 0;
@@ -162,6 +233,7 @@ div {
         transform: scale(1);
     }
 }
+
 @-webkit-keyframes pop {
     0% {
         -webkit-transform: scale(1);
@@ -169,7 +241,7 @@ div {
         transform: scale(1);
     }
     50% {
-    	-webkit-transform: scale(1.2);
+        -webkit-transform: scale(1.2);
         -moz-transform: scale(1.2);
         transform: scale(1.2);
     }
@@ -187,7 +259,7 @@ div {
         transform: scale(1);
     }
     50% {
-    	-webkit-transform: scale(1.2);
+        -webkit-transform: scale(1.2);
         -moz-transform: scale(1.2);
         transform: scale(1.2);
     }
@@ -205,7 +277,7 @@ div {
         transform: scale(1);
     }
     50% {
-    	-webkit-transform: scale(1.2);
+        -webkit-transform: scale(1.2);
         -moz-transform: scale(1.2);
         transform: scale(1.2);
     }
@@ -215,6 +287,7 @@ div {
         transform: scale(1);
     }
 }
+
 .content .tile-cell.tile-2 {
     background-color: #eee4da;
     color: #776e65;

@@ -175,21 +175,49 @@
         }
         return rows;
     };
-    grid.prototype.haveReachableCell = function() {
-
+    //检测是否存在可合并项目
+    grid.prototype.haveMergeableCell = function() {
+        var flag = false;
+        this.each(function(item) {
+            if (item) {
+                var neighbor = this.getCellNeighbor(item);
+                for (var i in neighbor) {
+                    if (neighbor[i] &&
+                        this.withinBound(neighbor[i]) &&
+                        item.value == neighbor[i].value
+                    ) {
+                        flag = true;
+                        return true;
+                    }
+                }
+            }
+        });
+        return flag;
+    };
+    //获得某个元素的相邻元素
+    grid.prototype.getCellNeighbor = function(position) {
+        var returnList = [];
+        for (var i = 0; i < 3; i++) {
+            var target = {
+                x: parseInt(position.x) + getVector(i).x,
+                y: parseInt(position.y) + getVector(i).y
+            };
+            if (this.withinBound(target)) {
+                returnList.push(this.getCellContent(target));
+            }
+        }
+        return returnList;
     };
     grid.prototype.isGridEmpty = function() {
-        return !this.whereEmpty();
+        return this.whereEmpty() == false;
     };
     grid.prototype.whereEmpty = function() {
         var emptyList = [];
-        for (var x in this.cells) {
-            for (var y in this.cells[x]) {
-                if (!this.cells[x][y]) {
-                    emptyList.push({ 'x': x, 'y': y });
-                }
+        this.each(function(item, x, y) {
+            if (!item) {
+                emptyList.push({ 'x': x, 'y': y });
             }
-        }
+        });
         return emptyList;
     };
     grid.prototype.randomAdd = function() {
@@ -255,6 +283,7 @@
                             self.getCellContent(cellResult.next).value *= 2;
                             //随后移除现在的元素
                             self.removeCell(position);
+                            isMovedFlag |= true;
                         } else {
                             //移动至位置
                             self.moveTile(position, cellResult.nearest) ? isMovedFlag |= true : isMovedFlag |= false;
@@ -296,9 +325,11 @@
     };
     //grid内元素遍历的方法
     grid.prototype.each = function(callback) {
-        for (var x in this.cells) {
+        outerloop: for (var x in this.cells) {
             for (var y in this.cells[x]) {
-                callback.call(this, this.cells[x][y], x, y);
+                if (callback.call(this, this.cells[x][y], x, y)) {
+                    break outerloop;
+                }
             }
         }
     };
@@ -451,7 +482,20 @@
         this.tile = $.div().addClass('tile');
         this.content.append(this.tile);
 
+        //添加控制框 
+        this.controlBox = $.div().addClass('control-box').css({'display':'none'});
+        this.message = document.createElement('h2');
+        this.message.innerHTML = "失败";
+        this.controlBox.append(this.message);
+        this.controlBox.append(
+            '<p class="control">' +
+            '<button>再次尝试</button>' +
+            '</p>'
+        );
+        this.content.append(this.controlBox);
+
         this.grid = $.div().addClass('grid');
+        //当size != 4时则说明需要更改默认大小
         if (size != 4) {
             var contentMargin = { 'margin': '-' + (contentLength / 2) + 'px' + ' -' + (contentLength / 2) + 'px' };
             this.content.css(sizeCSS).css(contentMargin);
@@ -507,8 +551,11 @@
         if (this.grid.travelDeep(direction)) {
             //当移动过才能添加随机的点
             this.grid.randomAdd();
-            //判断游戏是否结束
-
+        }
+        //判断游戏是否结束
+        if (this.grid.isGridEmpty() && !this.grid.haveMergeableCell() ) {
+            this.controlBox.css({'display':'block'});
+            this.message.innerHTML = '游戏结束';
         }
         //绘制dom
         this.tile[0].innerHTML = "";
