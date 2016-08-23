@@ -173,6 +173,8 @@ div {
 }
 
 .content .tile-cell {
+    left:0;
+    top:0;
     position: absolute;
     text-align: center;
     line-height: 88px;
@@ -182,12 +184,18 @@ div {
     font-family: "Clear Sans", "Helvetica Neue", Arial, sans-serif;
     border-radius: 3px;
     font-weight: bold;
-    -webkit-transition: 100ms ease-in-out;
-    -moz-transition: 100ms ease-in-out;
-    transition: 100ms ease-in-out;
-    -webkit-transition-property: -webkit-transform;
-    -moz-transition-property: -moz-transform;
     transition-property: top, left;
+	transition-duration: 100ms;
+	transition-timing-function: ease-in-out;
+	-moz-transition-property: top, left; /* Firefox 4 */
+	-moz-transition-duration: 100ms; /* Firefox 4 */
+	-webkit-transition-property: top, left; /* Safari and Chrome */
+	-webkit-transition-duration: 100ms; /* Safari and Chrome */
+	-o-transition-property: top, left; /* Opera */
+	-o-transition-duration: 100ms; /* Opera */
+	-moz-transition-timing-function: ease-in-out; /* Firefox 4 */
+	-webkit-transition-timing-function: ease-in-out; /* Safari 和 Chrome */
+	-o-transition-timing-function: ease-in-out; /* Opera */
 }
 
 .content .tile-new {
