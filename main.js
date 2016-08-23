@@ -181,6 +181,21 @@
         }
         return rows;
     };
+    grid.prototype.load = function() {
+        var str = JSON.parse(localStorage.getItem('grid'));
+        for (var index = str.length - 1; index >= 0; index--) {
+            this.cells[str[index].position.x][str[index].position.y] = new tile(str[index].position, str[index].value);
+        }
+    }
+    grid.prototype.save = function() {
+        var str = [];
+        this.each(function(item, x, y) {
+            if (item) {
+                str.push(item.serialize());
+            }
+        });
+        localStorage.setItem('grid', JSON.stringify(str));
+    };
     //检测是否存在可合并项目
     grid.prototype.haveMergeableCell = function() {
         var flag = false;
@@ -553,18 +568,28 @@
         }
         this.grid.init();
         this.bestDisplay.innerHTML = localStorage.getItem("score");
-        this.scoreDisplay.innerHTML = this.score;
     };
     //0.0.2:设定一些可能存在的结构
     //系统的启动
     GameManage.prototype.start = function() {
         this.init();
-        this.grid.randomAdd();
+
+        if (localStorage.getItem("grid")) {
+            this.grid.load();
+            this.score = parseInt(localStorage.getItem('nowscore'));
+        } else {
+            this.grid.randomAdd();
+            localStorage.setItem('nowscore', 0);
+        }
+
+        this.scoreDisplay.innerHTML = this.score;
+
         var _dom = this.grid.randerDom();
         this.tile[0].innerHTML = "";
         this.tile.append(_dom);
     };
     GameManage.prototype.restart = function() {
+        localStorage.removeItem("grid");
         this.start();
         this.controlBox.css({ 'display': 'none' });
     };
@@ -599,6 +624,9 @@
             //增加分数
             this.score += this.grid.deltaScore;
             this.scoreDisplay.innerHTML = this.score;
+            //保存进度
+            this.grid.save();
+            localStorage.setItem('nowscore', this.score);
         }
         //判断游戏是否结束
         if (this.grid.isGridEmpty() && !this.grid.haveMergeableCell()) {
@@ -636,4 +664,4 @@
 
 var game = new fake2048('content', 4);
 game.start();
-$('.start-button')[0].addEventListener('click', game.start.bind(game));
+$('.start-button')[0].addEventListener('click', game.restart.bind(game));
