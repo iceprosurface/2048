@@ -1,16 +1,28 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-	<meta charset='utf-8'>
-	<title>2048`s demo</title>
-	<link rel="stylesheet" type="text/css" href="main.css">
+    <meta charset='utf-8'>
+    <title>2048`s demo</title>
+    <link rel="stylesheet" type="text/css" href="main.css">
 </head>
+
 <body>
-	<!-- 这里将会是动态产生2048方块的地方 -->
-	<div class="content" id="content">
+    <div class="header">
+        <h1 class="title"><a href="/">2048</a></h1>
+        <div class="score-box">
+            <div class="score" id="score">0</div>
+            <div class="best">0</div>
+        </div>
+    </div>
+    <div class="introduction">
+    	<h4>移动方块片来获得2048以获得游戏胜利！<button class="start-button">新游戏</button></h4>
 		
-		
-	</div>
-	<script type="text/javascript" src="main.js"></script>
+    </div>
+    <!-- 这里将会是动态产生2048方块的地方 -->
+    <div class="content" id="content">
+    </div>
+    <script type="text/javascript" src="main.js"></script>
 </body>
+
 </html>

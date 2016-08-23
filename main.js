@@ -163,8 +163,13 @@
     // 0.0.1:设定一个可能存在的grid系统
     function grid(size) {
         this.size = size;
+        this.deltaScore = 0;
         this.cells = this.empty();
     }
+    grid.prototype.init = function() {
+        this.deltaScore = 0;
+        this.cells = this.empty();
+    };
     //0.0.2:设定一些可能存在的结构
     grid.prototype.empty = function() {
         //生成一个空的地图
@@ -190,6 +195,16 @@
                         return true;
                     }
                 }
+            }
+        });
+        return flag;
+    };
+    grid.prototype.isWin = function() {
+        var flag = false;
+        this.each(function(item) {
+            if (item && item.value == 2048) {
+                flag = true;
+                return true;
             }
         });
         return flag;
@@ -226,6 +241,7 @@
             num = Math.random() < 0.8 ? 2 : 4,
             newTile = new tile(emptyList[which], num);
         this.insertCell(newTile);
+        return num;
         //TODO:检测是否能够继续
     };
     //position参数需事先{x:……,y:……}类型的接口
@@ -259,6 +275,8 @@
     };
     //深度优先遍历
     grid.prototype.travelDeep = function(direction) {
+        //清零计数器
+        this.deltaScore = 0;
         this.travelCalculateInit();
         var directionList = getDirectionList(getVector(direction), this.size);
         var self = this;
@@ -280,6 +298,7 @@
                             self.getCellContent(cellResult.next).value == self.getCellContent(position).value) {
                             //若value相同则是可以合并的，把cell放置入mergedform
                             self.getCellContent(cellResult.next).mergedFrom = self.cells[x][y];
+                            self.deltaScore += self.getCellContent(cellResult.next).value;
                             self.getCellContent(cellResult.next).value *= 2;
                             //随后移除现在的元素
                             self.removeCell(position);
@@ -373,7 +392,7 @@
                                 });
                             _font = document.createElement('font');
                             _font.innerHTML = this.cells[i][j].value;
-                            _tile.append(_font);
+                            _tile.append(_font.cloneNode());
                             _from.append(_font);
                             _dom.append(_tile);
                             _dom.append(_from);
@@ -385,7 +404,7 @@
                                     });
                                     dfrom.removeClass('tile-' + dvalue).addClass('tile-' + dvalue * 2).addClass('tile-merged');
                                 }
-                            })(x, y, _from, _tile, value));
+                            })(prex, prey, _from, _tile, value));
                         } else {
                             //如果是=没有merge from就说明只有移动或者不动,不管动不动都一样
                             var prey = parseInt(this.cells[i][j].previousPosition.y);
@@ -483,7 +502,7 @@
         this.content.append(this.tile);
 
         //添加控制框 
-        this.controlBox = $.div().addClass('control-box').css({'display':'none'});
+        this.controlBox = $.div().addClass('control-box').css({ 'display': 'none' });
         this.message = document.createElement('h2');
         this.message.innerHTML = "失败";
         this.controlBox.append(this.message);
@@ -493,7 +512,8 @@
             '</p>'
         );
         this.content.append(this.controlBox);
-
+        //获得分数框
+        this.scoreDisplay = document.getElementById('score');
         this.grid = $.div().addClass('grid');
         //当size != 4时则说明需要更改默认大小
         if (size != 4) {
@@ -512,6 +532,8 @@
         }
         //添加grid加入content渲染区域
         this.content.append(this.grid);
+        //要在dom树完成后才能访问到child
+        this.controlBox[0].children[1].children[0].addEventListener('click', this.restart.bind(this));
         //初始化绑定
         document.addEventListener('keydown', this.move.bind(this));
         //初始化grid系统
@@ -519,18 +541,35 @@
         return this;
 
     }
+    GameManage.prototype.init = function() {
+        //游戏运行状态(0-正常，1-失败，2-游戏胜利)
+        this.status = 0;
+        //游戏计分板
+        this.score = 0;
+        this.grid.init();
+        this.scoreDisplay.innerHTML = this.score;
+    };
     //0.0.2:设定一些可能存在的结构
     //系统的启动
     GameManage.prototype.start = function() {
+        this.init();
         this.grid.randomAdd();
         var _dom = this.grid.randerDom();
+        this.tile[0].innerHTML = "";
         this.tile.append(_dom);
+    };
+    GameManage.prototype.restart = function() {
+        this.start();
+        this.controlBox.css({ 'display': 'none' });
     };
     //系统的关闭
     GameManage.prototype.stop = function() {
 
     };
     GameManage.prototype.move = function(event) {
+        if (this.status != 0) return;
+        //清除默认执行事件
+        event.preventDefault();
         var direction;
         switch (event.keyCode) {
             case 37:
@@ -551,11 +590,21 @@
         if (this.grid.travelDeep(direction)) {
             //当移动过才能添加随机的点
             this.grid.randomAdd();
+            //增加分数
+            this.score += this.grid.deltaScore;
+            this.scoreDisplay.innerHTML = this.score;
         }
         //判断游戏是否结束
-        if (this.grid.isGridEmpty() && !this.grid.haveMergeableCell() ) {
-            this.controlBox.css({'display':'block'});
+        if (this.grid.isGridEmpty() && !this.grid.haveMergeableCell()) {
+            this.controlBox.css({ 'display': 'block' });
             this.message.innerHTML = '游戏结束';
+            this.status = 1;
+        }
+        //判断是否游戏胜利
+        if (this.grid.isWin()) {
+            this.controlBox.css({ 'display': 'block' });
+            this.message.innerHTML = '游戏胜利';
+            this.status = 2;
         }
         //绘制dom
         this.tile[0].innerHTML = "";
@@ -575,3 +624,4 @@
 
 var game = new fake2048('content', 4);
 game.start();
+$('.start-button')[0].addEventListener('click', game.start.bind(game));
