@@ -378,7 +378,7 @@
         });
     };
     //需要切换到专用的html渲染类
-    grid.prototype.randerDom = function() {
+    grid.prototype.randerDom = function(tilePostion) {
         var _dom = $.div();
         for (var i in this.cells) {
             for (var j in this.cells[i]) {
@@ -393,15 +393,13 @@
                             var prex = this.cells[i][j].x;
                             var value = this.cells[i][j].mergedFrom.value;
                             _from = $.div()
-                                .addClass('tile-' + value)
-                                .addClass('tile-cell')
+                                .addClass('tile-' + value + ' tile-cell')
                                 .css({
                                     'top': (BLOCK_SIZE * prey + 16 * prey) + 'px',
                                     'left': (BLOCK_SIZE * prex + 16 * prex) + 'px'
                                 });
                             _tile = $.div()
-                                .addClass('tile-' + value)
-                                .addClass('tile-cell')
+                                .addClass('tile-' + value + ' tile-cell')
                                 .css({
                                     'top': (BLOCK_SIZE * y + 16 * y) + 'px',
                                     'left': (BLOCK_SIZE * x + 16 * x) + 'px'
@@ -410,8 +408,8 @@
                             _font.innerHTML = this.cells[i][j].value;
                             _tile.append(_font.cloneNode());
                             _from.append(_font);
-                            _dom.append(_tile);
-                            _dom.append(_from);
+                            tilePostion.append(_tile);
+                            tilePostion.append(_from);
                             window.requestAnimationFrame((function(dx, dy, dfrom, dtile, dvalue) {
                                 return function() {
                                     dtile.css({
@@ -428,8 +426,7 @@
                             var y = this.cells[i][j].y;
                             var x = this.cells[i][j].x;
                             _tile = $.div()
-                                .addClass('tile-' + this.cells[i][j].value)
-                                .addClass('tile-cell')
+                                .addClass('tile-' + this.cells[i][j].value + ' tile-cell')
                                 .css({
                                     'top': (BLOCK_SIZE * prey + 16 * prey) + 'px',
                                     'left': (BLOCK_SIZE * prex + 16 * prex) + 'px'
@@ -437,7 +434,7 @@
                             _font = document.createElement('font');
                             _font.innerHTML = this.cells[i][j].value;
                             _tile.append(_font);
-                            _dom.append(_tile);
+                            tilePostion.append(_tile);
                             window.requestAnimationFrame((function(dx, dy, dtile) {
                                 return function() {
                                     dtile.css({
@@ -449,9 +446,7 @@
                         }
                     } else {
                         _tile = $.div()
-                            .addClass('tile-' + this.cells[i][j].value)
-                            .addClass('tile-cell')
-                            .addClass('tile-new')
+                            .addClass('tile-' + this.cells[i][j].value + ' tile-cell tile-new')
                             .css({
                                 'top': (BLOCK_SIZE * j + 16 * j) + 'px',
                                 'left': (BLOCK_SIZE * i + 16 * i) + 'px'
@@ -459,13 +454,12 @@
                         _font = document.createElement('font');
                         _font.innerHTML = this.cells[i][j].value;
                         _tile.append(_font);
-                        _dom.append(_tile);
+                        tilePostion.append(_tile);
                     }
 
                 }
             }
         }
-        return _dom;
     };
 
     function tile(position, value) {
@@ -584,9 +578,8 @@
 
         this.scoreDisplay.innerHTML = this.score;
 
-        var _dom = this.grid.randerDom();
         this.tile[0].innerHTML = "";
-        this.tile.append(_dom);
+        this.grid.randerDom(this.tile);
     };
     GameManage.prototype.restart = function() {
         localStorage.removeItem("grid");
@@ -648,8 +641,7 @@
         }
         //绘制dom
         this.tile[0].innerHTML = "";
-        var _dom = this.grid.randerDom();
-        this.tile.append(_dom);
+        this.grid.randerDom(this.tile);
     };
     //可能需要添加的controlmanage
     // function controlManage() {

@@ -23,13 +23,18 @@ div {
     width: 400px;
     margin: 10px auto;
 }
+.header:after {
+    content: "";
+    display: block;
+    clear: both;
+}
 
 
 /* 分数 */
 
 .header .title {
     display: inline-block;
-    margin-right: 40px;
+    float: left;
 }
 
 .header .title a {
